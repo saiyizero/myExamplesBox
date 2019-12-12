@@ -1,0 +1,6 @@
+spring:
+   datasource:
+      url: jdbc:mysql://39.105.142.33:3306/HXDB?useUnicode=true&characterEncoding=UTF-8
+      username: banksys
+      password: sa26212835
+      driver-class-name: com.mysql.jdbc.Driver
