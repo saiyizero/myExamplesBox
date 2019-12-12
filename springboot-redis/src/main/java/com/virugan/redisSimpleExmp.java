@@ -14,12 +14,13 @@ import org.springframework.test.context.junit4.SpringRunner;
  * 针对于redis的简单测试案例
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = redisTemplExmp.class)
+@SpringBootTest(classes = redisSimpleExmp.class)
 @ComponentScan(basePackages = "com.virugan")
-public class redisTemplExmp {
+public class redisSimpleExmp {
 
     @Autowired
     redisSimpleService redisSimpleService;
+
     /**
      * 向redis 进行String类型赋值
      */
@@ -37,5 +38,20 @@ public class redisTemplExmp {
         redisSimpleService.redisSetString(hxsyskemut);
 
         myLogger.info("=============redisTemplExmp.redisSetString.end=============");
+    }
+    /**
+     * 从redis中获取值
+     */
+    @Test
+    public void redisGetString(){
+        myLogger.info("=============redisTemplExmp.redisGetString.start=============");
+
+        hxsysKemut hxsyskemut = new hxsysKemut();
+        hxsyskemut.setFaredma("001");
+        hxsyskemut.setKemuhoo(120011001);
+
+        redisSimpleService.redisGetString(hxsyskemut);
+
+        myLogger.info("=============redisTemplExmp.redisGetString.end=============");
     }
 }
