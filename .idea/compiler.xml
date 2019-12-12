@@ -9,16 +9,16 @@
         <module name="spring-mybatis" />
         <module name="public-module" />
         <module name="spring-jdbc" />
-        <module name="publicmodule" />
-        <module name="springboot" />
-        <module name="public-spring-redis" />
-        <module name="springmybatis" />
-        <module name="spring-boot" />
-        <module name="springboot-redis" />
-        <module name="public-utils" />
         <module name="public-spring-jdbc" />
-        <module name="springjdbc" />
+        <module name="public-spring-redis" />
+        <module name="springboot" />
+        <module name="public-utils" />
+        <module name="springmybatis" />
+        <module name="springboot-redis" />
         <module name="springbootredis" />
+        <module name="publicmodule" />
+        <module name="springjdbc" />
+        <module name="spring-boot" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

@@ -4,9 +4,12 @@ import com.virugan.context.myLogger;
 import com.virugan.utils.myBeanUtils;
 import com.virugan.utils.myDbUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -67,7 +70,7 @@ public class MyJdbcTemple {
         for(String key: EntityMap.keySet()){
             sql.append(key);
             sql.append("=?");
-            if(i<EntityMap.size()){
+            if(i<EntityMap.size()-1){
                 sql.append(",");
 
             }
@@ -78,7 +81,7 @@ public class MyJdbcTemple {
         for(String key: KeyMap.keySet()){
             sql.append(key);
             sql.append("=?");
-            if(i<KeyMap.size()+EntityMap.size()){
+            if(i<KeyMap.size()+EntityMap.size()-1){
                 sql.append(" and ");
             }
             args[i]=KeyMap.get(key);
@@ -96,18 +99,68 @@ public class MyJdbcTemple {
         return false;
     }
 
-    public Object selectOneToEntity(){
-        return null;
+    public <T> T selectOneToEntity(T tableEntity){
+        StringBuffer sql = new StringBuffer();
+        Map<String, Object> EntityMap = myBeanUtils.getKeyAndValue(tableEntity);
+        sql.append("select * from ");
+        sql.append(myDbUtils.toDbTableNames(tableEntity.getClass().getSimpleName()));
+        List addList = myBeanUtils.getList();
+
+        for(String key: EntityMap.keySet()){
+            if(EntityMap.get(key)!=null){
+                if(addList.size()<=0){
+                    sql.append(" where ");
+                    sql.append(key);
+                    sql.append("=?");
+                }else{
+                    sql.append(" and ");
+                    sql.append(key);
+                    sql.append("=?");
+                }
+                addList.add(EntityMap.get(key));
+            }
+        }
+        Object args[]=new Object[addList.size()];
+        for(int i=0;i<addList.size();i++){
+            args[i]=addList.get(i);
+        }
+
+        myLogger.debug("sql",sql);
+        myLogger.debug("param",args);
+        T result = (T)jdbcTemplate.queryForObject(sql.toString(), args, new BeanPropertyRowMapper(tableEntity.getClass()));
+        return result;
     }
 
-    public Object selectOneToMap(){
-        return null;
-    }
 
-    public Object selectAllToEntity(){
-        return null;
-    }
-    public Object selectAllToMap(){
-        return null;
+    public <T> List<T> selectAllToEntity(T tableEntity){
+        StringBuffer sql = new StringBuffer();
+        Map<String, Object> EntityMap = myBeanUtils.getKeyAndValue(tableEntity);
+        sql.append("select * from ");
+        sql.append(myDbUtils.toDbTableNames(tableEntity.getClass().getSimpleName()));
+        List addList = myBeanUtils.getList();
+
+        for(String key: EntityMap.keySet()){
+            if(EntityMap.get(key)!=null){
+                if(addList.size()<=0){
+                    sql.append(" where ");
+                    sql.append(key);
+                    sql.append("=?");
+                }else{
+                    sql.append(" and ");
+                    sql.append(key);
+                    sql.append("=?");
+                }
+                addList.add(EntityMap.get(key));
+            }
+        }
+        Object args[]=new Object[addList.size()];
+        for(int i=0;i<addList.size();i++){
+            args[i]=addList.get(i);
+        }
+
+        myLogger.debug("sql",sql);
+        myLogger.debug("param",args);
+        List result = jdbcTemplate.queryForList(sql.toString(), args, new BeanPropertyRowMapper(tableEntity.getClass()));
+        return result;
     }
 }

@@ -10,7 +10,7 @@ public class MyRedisTemple {
     @Autowired
     RedisTemplate redisTemplate;
 
-    public void saveObject(Object key,Object object){
+    public void saveObject(String key,Object object){
         redisTemplate.opsForValue().set(key,object);
     }
 }

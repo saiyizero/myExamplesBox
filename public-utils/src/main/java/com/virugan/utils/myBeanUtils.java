@@ -45,6 +45,10 @@ public class myBeanUtils {
         return new ArrayList<Map<String,Object>>();
     }
 
+    public static List getList(){
+        return new ArrayList<>();
+    }
+
 
     public static List<String> getstringList(){
         return new ArrayList<String>();

@@ -28,14 +28,19 @@ public class redisSimpleService {
             myJdbcTemple.insert(hxsyskemut);
             resultKemut=hxsyskemut;
         }
+
+        //打印selectOneToEntity查询结果
+        myLogger.debugToObject("resultKemut",resultKemut);
+
         String key=hxsyskemut.getClass().getSimpleName()+":"+hxsyskemut.getFaredma()+":"+ hxsyskemut.getKemuhoo();
+        //打印拼装后Key值
         myLogger.debug("key",key);
         //将数据同步redis
         myRedisTemple.saveObject(key,resultKemut);
     }
 
     public void redisGetString(hxsysKemut hxsyskemut){
-        List list = myJdbcTemple.selectAllToEntity(hxsyskemut);
+        List<hxsysKemut> list = myJdbcTemple.selectAllToEntity(hxsyskemut);
         if(list!=null){
             myLogger.debug(list.size());
         }
