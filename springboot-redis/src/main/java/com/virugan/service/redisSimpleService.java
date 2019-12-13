@@ -40,9 +40,13 @@ public class redisSimpleService {
     }
 
     public void redisGetString(hxsysKemut hxsyskemut){
-        List<hxsysKemut> list = myJdbcTemple.selectAllToEntity(hxsyskemut);
-        if(list!=null){
-            myLogger.debug(list.size());
-        }
+        hxsysKemut resultKemut = myJdbcTemple.selectOneToEntity(hxsyskemut);
+        myLogger.debugToObject("mysql --> resultKemut",resultKemut);
+
+        String key=hxsyskemut.getClass().getSimpleName()+":"+hxsyskemut.getFaredma()+":"+ hxsyskemut.getKemuhoo();
+        hxsysKemut kemut = myRedisTemple.findObject(key, hxsysKemut.class);
+
+        myLogger.debugToObject("redis --> resultKemut",resultKemut);
+
     }
 }

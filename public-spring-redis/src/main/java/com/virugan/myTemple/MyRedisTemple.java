@@ -13,4 +13,9 @@ public class MyRedisTemple {
     public void saveObject(String key,Object object){
         redisTemplate.opsForValue().set(key,object);
     }
+
+    public <T> T findObject(String key,Class<T> t){
+        T o = (T)redisTemplate.opsForValue().get(key);
+        return o;
+    }
 }

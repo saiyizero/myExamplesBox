@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * 针对于redis的简单测试案例
+ * 只是用redisTemple api 的简单测试案例
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = redisSimpleExmp.class)
@@ -39,6 +39,7 @@ public class redisSimpleExmp {
 
         myLogger.info("=============redisTemplExmp.redisSetString.end=============");
     }
+
     /**
      * 从redis中获取值
      */

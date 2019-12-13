@@ -4,16 +4,20 @@ import com.virugan.context.myLogger;
 import com.virugan.utils.myBeanUtils;
 import com.virugan.utils.myDbUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
 @Component
-public class MyJdbcTemple {
+@CacheConfig(cacheNames = "MyJdbcTempleWithCache")
+public class MyJdbcTempleWithCache {
+
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -95,11 +99,8 @@ public class MyJdbcTemple {
         }
     }
 
-    public boolean updateByPK(Object tableEntity){
-        return false;
-    }
-
-    public <T> T selectOneToEntity(T tableEntity){
+    @Cacheable(keyGenerator = "TableKeyGeneratorImpl")
+    public <T> T selectByPrimaryKey(T tableEntity){
         StringBuffer sql = new StringBuffer();
         Map<String, Object> EntityMap = myBeanUtils.getKeyAndValue(tableEntity);
         sql.append("select * from ");
@@ -132,35 +133,14 @@ public class MyJdbcTemple {
     }
 
 
-    public <T> List<T> selectAllToEntity(T tableEntity){
-        StringBuffer sql = new StringBuffer();
-        Map<String, Object> EntityMap = myBeanUtils.getKeyAndValue(tableEntity);
-        sql.append("select * from ");
-        sql.append(myDbUtils.toDbTableNames(tableEntity.getClass().getSimpleName()));
-        List addList = myBeanUtils.getList();
-
-        for(String key: EntityMap.keySet()){
-            if(EntityMap.get(key)!=null){
-                if(addList.size()<=0){
-                    sql.append(" where ");
-                    sql.append(key);
-                    sql.append("=?");
-                }else{
-                    sql.append(" and ");
-                    sql.append(key);
-                    sql.append("=?");
-                }
-                addList.add(EntityMap.get(key));
-            }
-        }
-        Object args[]=new Object[addList.size()];
-        for(int i=0;i<addList.size();i++){
-            args[i]=addList.get(i);
-        }
-
+    @Cacheable(key = "'MyTablePKmap:'+#p0",unless = "#result==null||#result.isEmpty()")
+    public List<String> getTablePrimaryKey(String tableName){
+        StringBuilder sql = new StringBuilder();
+        sql.append("select column_name from information_schema.key_column_usage where table_name=?");
+        tableName=myDbUtils.toDbTableNames(tableName);
         myLogger.debug("sql",sql);
-        myLogger.debug("param",args);
-        List result = jdbcTemplate.query(sql.toString(), args, new BeanPropertyRowMapper(tableEntity.getClass()));
-        return result;
+        myLogger.debug("param",tableName);
+        List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class, tableName);
+        return list;
     }
 }
