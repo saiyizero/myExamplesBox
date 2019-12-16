@@ -1,14 +1,17 @@
-package com.virugan.utils;
+package com.virugan.impl;
+
+import com.virugan.interfaces.myDbHandle;
+import org.springframework.stereotype.Component;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class myDbUtils {
-
-    //用于entity与 数据库表名称转换
-    public static String toChangeTableNames(String tableNme){
+@Component
+public class thisDbHandle implements myDbHandle {
+    @Override
+    public String toChangeTableNames(String tableNames) {
         Pattern humpPattern = Pattern.compile("[A-Z]");
-        Matcher matcher = humpPattern.matcher(tableNme);
+        Matcher matcher = humpPattern.matcher(tableNames);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
             matcher.appendReplacement(sb, "_" + matcher.group(0).toLowerCase());
@@ -16,5 +19,4 @@ public class myDbUtils {
         matcher.appendTail(sb);
         return sb.toString();
     }
-
 }
