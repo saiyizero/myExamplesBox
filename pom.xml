@@ -28,7 +28,9 @@
         <module>public-spring-jdbc</module>
         <module>public-spring-redis</module>
         <module>public-utils</module>
+        <module>examples-annotation</module>
     </modules>
+
 
 
 </project>

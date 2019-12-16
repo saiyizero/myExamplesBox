@@ -22,10 +22,10 @@ public class redisCacheExmp {
     redisCacheService rediscacheService;
 
     /**
-     * 带缓存进行查询
+     * 带缓存进行单笔查询
      */
     @Test
-    public void selectWithCache(){
+    public void selectWithCache() throws Exception {
         myLogger.info("=============redisCacheExmp.selectWithCache.start=============");
 
         hxsysKemut hxsyskemut = new hxsysKemut();
@@ -34,5 +34,23 @@ public class redisCacheExmp {
         rediscacheService.selectWithCache(hxsyskemut);
 
         myLogger.info("=============redisCacheExmp.selectWithCache.end=============");
+    }
+    /**
+     * 新增数据：调用缓存查询，如果不存在则插入
+     * **/
+    @Test
+    public void InsertData() throws Exception {
+        myLogger.info("=============redisCacheExmp.InsertData.start=============");
+
+        hxsysKemut hxsyskemut = new hxsysKemut();
+        hxsyskemut.setFaredma("001");
+        hxsyskemut.setKemuhoo(120011002);
+        hxsyskemut.setKemujib(2);
+        hxsyskemut.setKemulex("1");
+        hxsyskemut.setKemumas("存放中央银行备付金");
+        hxsyskemut.setKemunme("存放央行");
+        rediscacheService.insertData(hxsyskemut);
+
+        myLogger.info("=============redisCacheExmp.InsertData.end=============");
     }
 }

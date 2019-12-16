@@ -2,23 +2,26 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="spring-mybatis" />
-        <module name="public-module" />
-        <module name="spring-jdbc" />
+        <module name="public-spring-jdbc" />
+        <module name="springjdbc" />
+        <module name="examples-annotation" />
         <module name="public-spring-redis" />
         <module name="springboot" />
-        <module name="springbootredis" />
-        <module name="springjdbc" />
-        <module name="spring-boot" />
-        <module name="springboot-redis" />
+        <module name="examplesannotation" />
+        <module name="spring-jdbc" />
         <module name="springmybatis" />
-        <module name="public-spring-jdbc" />
+        <module name="spring-boot" />
         <module name="publicmodule" />
         <module name="public-utils" />
+        <module name="springboot-redis" />
+        <module name="springbootredis" />
+        <module name="public-module" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -27,6 +30,8 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="examples-annotation" options="-parameters" />
+      <module name="examplesannotation" options="-parameters" />
       <module name="public-module" options="-parameters" />
       <module name="public-spring-jdbc" options="-parameters" />
       <module name="public-spring-redis" options="-parameters" />

@@ -1,12 +1,12 @@
 package com.virugan.myTemple;
 
 import com.virugan.context.myLogger;
+import com.virugan.interfaces.myDbHandle;
+import com.virugan.myException.myCheckException;
 import com.virugan.utils.myBeanUtils;
-import com.virugan.utils.myDbUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,9 @@ public class MyJdbcTempleWithCache {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-
+    @Autowired
+    myDbHandle myDbHandle;
+    
     public boolean insert(Object tableEntity){
         StringBuffer sql = new StringBuffer();
         StringBuffer val = new StringBuffer();
@@ -29,7 +31,7 @@ public class MyJdbcTempleWithCache {
         Object args[]=new Object[size];
 
         sql.append("insert into ");
-        sql.append(myDbUtils.toDbTableNames(tableEntity.getClass().getSimpleName()));
+        sql.append(myDbHandle.toChangeTableNames(tableEntity.getClass().getSimpleName()));
         sql.append(" (");
         int i=0;
 
@@ -68,7 +70,7 @@ public class MyJdbcTempleWithCache {
         Object args[]=new Object[KeyMap.size()+EntityMap.size()];
 
         sql.append("update ");
-        sql.append(myDbUtils.toDbTableNames(tableEntity.getClass().getSimpleName()));
+        sql.append(myDbHandle.toChangeTableNames(tableEntity.getClass().getSimpleName()));
         sql.append(" set ");
         int i=0;
         for(String key: EntityMap.keySet()){
@@ -100,16 +102,20 @@ public class MyJdbcTempleWithCache {
     }
 
     @Cacheable(keyGenerator = "TableKeyGeneratorImpl")
-    public <T> T selectByPrimaryKey(T tableEntity){
+    public <T> T selectByPrimaryKey(T tableEntity) throws Exception {
         StringBuffer sql = new StringBuffer();
         Map<String, Object> EntityMap = myBeanUtils.getKeyAndValue(tableEntity);
         sql.append("select * from ");
-        sql.append(myDbUtils.toDbTableNames(tableEntity.getClass().getSimpleName()));
-        List addList = myBeanUtils.getList();
-
-        for(String key: EntityMap.keySet()){
-            if(EntityMap.get(key)!=null){
-                if(addList.size()<=0){
+        sql.append(myDbHandle.toChangeTableNames(tableEntity.getClass().getSimpleName()));
+        List<String> list = getTablePrimaryKey(tableEntity.getClass().getSimpleName());
+        if(list.size()<=0){
+            throw myCheckException.isNotExistException(tableEntity.getClass().getSimpleName()+" the PK");
+        }
+        Object args[]=new Object[list.size()];
+        int i=0;
+        for(String key: list){
+            if(EntityMap.containsKey(key)&& EntityMap.get(key)!=null){
+                if(i<=0){
                     sql.append(" where ");
                     sql.append(key);
                     sql.append("=?");
@@ -118,12 +124,11 @@ public class MyJdbcTempleWithCache {
                     sql.append(key);
                     sql.append("=?");
                 }
-                addList.add(EntityMap.get(key));
+                args[i]=EntityMap.get(key);
+                i++;
+            }else{
+                throw myCheckException.isNullException(tableEntity.getClass().getSimpleName()+":"+key);
             }
-        }
-        Object args[]=new Object[addList.size()];
-        for(int i=0;i<addList.size();i++){
-            args[i]=addList.get(i);
         }
 
         myLogger.debug("sql",sql);
@@ -137,7 +142,7 @@ public class MyJdbcTempleWithCache {
     public List<String> getTablePrimaryKey(String tableName){
         StringBuilder sql = new StringBuilder();
         sql.append("select column_name from information_schema.key_column_usage where table_name=?");
-        tableName=myDbUtils.toDbTableNames(tableName);
+        tableName=myDbHandle.toChangeTableNames(tableName);
         myLogger.debug("sql",sql);
         myLogger.debug("param",tableName);
         List<String> list = jdbcTemplate.queryForList(sql.toString(), String.class, tableName);
